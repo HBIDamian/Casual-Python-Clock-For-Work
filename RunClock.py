@@ -4,7 +4,6 @@ import time
 import warnings
 import webbrowser
 warnings.filterwarnings("ignore", category=UserWarning)
-
 # Check if PyQt5 is installed, display a warning if not
 try:
     from PyQt5.QtWidgets import (
@@ -20,7 +19,6 @@ except ImportError:
     print("PyQt5 is not installed. Please install it using 'pip install PyQt5'")
     sys.exit(1)
 
-
 # Define the main application window for the digital clock
 class Clock(QMainWindow):
     def __init__(self):
@@ -33,6 +31,7 @@ class Clock(QMainWindow):
         self.is_fullscreen = False
         self.foreground_color = 'white'
         self.background_color = 'black'
+        self.menubar_visible = True
         self.setWindowTitle('Digital Clock')
         self.initUI()
 
@@ -78,9 +77,8 @@ class Clock(QMainWindow):
 
     # Create the menu bar with settings and help options
     def createMenuBar(self):
-        menubar = self.menuBar()
-
-        settings_menu = menubar.addMenu('Settings')
+        self.menubar = self.menuBar()
+        settings_menu = self.menubar.addMenu('Settings')
         colours_menu = QMenu('Colours', self)
         bg_color_action = QAction('Background Colour', self)
         bg_color_action.triggered.connect(self.set_background_color)
@@ -89,8 +87,15 @@ class Clock(QMainWindow):
         fg_color_action.triggered.connect(self.set_foreground_color)
         colours_menu.addAction(fg_color_action)
         settings_menu.addMenu(colours_menu)
-
-        help_menu = menubar.addMenu('Help')
+        # Add "Presets" menu to Colors
+        presets_menu = QMenu('Presets', self)
+        presets_menu.addAction('Black on White').triggered.connect(lambda: self.setPresetColors('white', 'black'))
+        presets_menu.addAction('White on Black').triggered.connect(lambda: self.setPresetColors('black', 'white'))
+        presets_menu.addAction('Red on Black').triggered.connect(lambda: self.setPresetColors('black', 'red'))
+        presets_menu.addAction('Green on Black').triggered.connect(lambda: self.setPresetColors('black', 'green'))
+        presets_menu.addAction('Blue on Black').triggered.connect(lambda: self.setPresetColors('black', 'blue'))
+        colours_menu.addMenu(presets_menu)
+        help_menu = self.menubar.addMenu('Help')
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
@@ -129,6 +134,7 @@ class Clock(QMainWindow):
             "+, =\t Increase Font Size\n"
             "0, F5\t Reset Font Size\n"
             "/, ?, F1 \t Show Help\n"
+            "M, T\t Toggle Menubar\n"
             "Settings > Colours > Background Colour: Change Background Colour\n"
             "Settings > Colours > Foreground Colour: Change Foreground Colour"
         )
@@ -150,6 +156,8 @@ class Clock(QMainWindow):
             self.resetFontSize()
         elif event.key() in (Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1):
             self.show_help()
+        elif event.key() in (Qt.Key_M, Qt.Key_T):
+            self.toggleMenubar()
 
     # Toggle between fullscreen and normal window size
     def toggleFullscreen(self):
@@ -159,6 +167,14 @@ class Clock(QMainWindow):
             self.showFullScreen()
             self.updateWindowSizeFullscreen()
         self.is_fullscreen = not self.is_fullscreen
+
+    # Toggle the visibility of the menubar
+    def toggleMenubar(self):
+        if self.menubar_visible:
+            self.menubar.hide()
+        else:
+            self.menubar.show()
+        self.menubar_visible = not self.menubar_visible
 
     # Change the font size by a specified delta
     def changeFontSize(self, delta):
@@ -193,6 +209,12 @@ class Clock(QMainWindow):
     def updateWindowSizeFullscreen(self):
         screen_rect = QApplication.desktop().screenGeometry()
         self.setGeometry(screen_rect)
+
+    # Function to set preset colors
+    def setPresetColors(self, bg_color, fg_color):
+        self.background_color = bg_color
+        self.foreground_color = fg_color
+        self.updateFontSize()
 
     # Open a color dialog to set the background color
     def set_background_color(self):
