@@ -24,7 +24,7 @@ from .window_functions import (
 # Ignore UserWarnings
 warnings.filterwarnings("ignore", category=UserWarning)
 
-class Timer(QMainWindow):
+class Stopwatch(QMainWindow):
     def __init__(self):
         super().__init__()
         # Initial settings
@@ -33,20 +33,20 @@ class Timer(QMainWindow):
         self.min_font_size = 50
         self.max_font_size = 480
         self.is_fullscreen = False
-        self.timer_running = False
+        self.stopwatch_running = False
         self.elapsed_time = 0
         self.pinnedWindow = False
         self.foreground_color = 'white'
         self.background_color = 'black'
-        self.setWindowTitle('Digital Timer')
-        self.setWindowIconText('Digital Timer')
+        self.setWindowTitle('Digital Stopwatch')
+        self.setWindowIconText('Digital Stopwatch')
         self.initUI()
 
     def initUI(self):
         # Initialize UI components
         self.loadCustomFont()
         self.createLabel()
-        self.createTimer()
+        self.createStopwatch()
         self.setInitialWindowSize()
         self.loadThemes()
         self.createMenuBar()
@@ -68,10 +68,10 @@ class Timer(QMainWindow):
         self.updateFontSize()
         self.updateTime()
 
-    def createTimer(self):
-        # Create timer to update time display
-        self.timer = QTimer(self)
-        self.timer.timeout.connect(self.updateTime)
+    def createStopwatch(self):
+        # Create stopwatch to update time display
+        self.stopwatch = QTimer(self)
+        self.stopwatch.timeout.connect(self.updateTime)
 
     def setInitialWindowSize(self):
         # Set initial window size based on font metrics
@@ -90,7 +90,7 @@ class Timer(QMainWindow):
     def createMenuBar(self):
         # Create menu bar with actions and menus
         self.menubar = self.menuBar()
-        settings_menu = self.menubar.addMenu('Timer Settings')
+        settings_menu = self.menubar.addMenu('Stopwatch Settings')
 
         # Pin Window Action
         pin_action = QAction('Pin Window', self)
@@ -106,16 +106,16 @@ class Timer(QMainWindow):
 
         settings_menu.addSeparator()
 
-        # Start/Stop Timer Action
+        # Start/Stop Stopwatch Action
         start_stop_action = QAction('Start/Stop', self)
         start_stop_action.setShortcut('Space')
-        start_stop_action.triggered.connect(self.toggleTimer)
+        start_stop_action.triggered.connect(self.toggleStopwatch)
         settings_menu.addAction(start_stop_action)
 
-        # Reset Timer Action
+        # Reset Stopwatch Action
         reset_action = QAction('Reset', self)
         reset_action.setShortcut('R')
-        reset_action.triggered.connect(self.resetTimer)
+        reset_action.triggered.connect(self.resetStopwatch)
         settings_menu.addAction(reset_action)
 
         settings_menu.addSeparator()
@@ -171,8 +171,8 @@ class Timer(QMainWindow):
     def show_about(self):
         # Show the 'About' message box
         about_message = (
-            "Idle Digital Timer (using Python)\n\n"
-            "A simple digital Timer application\n"
+            "Idle Digital Stopwatch (using Python)\n\n"
+            "A simple digital Stopwatch application\n"
             "Created by HBIDamian"
         )
         about_message_box = QMessageBox()
@@ -200,8 +200,8 @@ class Timer(QMainWindow):
             "F, F11\t Toggle Fullscreen\n"
             "M, T\t Toggle Menubar\n"
             "P\t Pin Window\n"
-            "Space\t Start/Stop Timer\n"
-            "R\t Reset Timer\n"
+            "Space\t Start/Stop Stopwatch\n"
+            "R\t Reset Stopwatch\n"
             "-, _\t Decrease Font Size\n"
             "+, =\t Increase Font Size\n"
             "0, F5\t Reset Font Size\n"
@@ -239,20 +239,20 @@ class Timer(QMainWindow):
             self.updateWindowSizeFullscreen()
         self.is_fullscreen = not self.is_fullscreen
 
-    def toggleTimer(self):
-        # Toggle start/stop of the timer
-        if self.timer_running:
-            self.timer.stop()
+    def toggleStopwatch(self):
+        # Toggle start/stop of the stopwatch
+        if self.stopwatch_running:
+            self.stopwatch.stop()
         else:
-            self.timer.start(1000)  # Update every second
-        self.timer_running = not self.timer_running
+            self.stopwatch.start(1000)  # Update every second
+        self.stopwatch_running = not self.stopwatch_running
 
-    def resetTimer(self):
-        # Reset timer to 00:00:00 and stop it
+    def resetStopwatch(self):
+        # Reset stopwatch to 00:00:00 and stop it
         self.elapsed_time = 0
         self.updateTime()
-        self.timer.stop()
-        self.timer_running = False
+        self.stopwatch.stop()
+        self.stopwatch_running = False
 
     def updateTime(self):
         # Update time displayed on the label
@@ -294,13 +294,15 @@ class Timer(QMainWindow):
         if key in [Qt.Key_F, Qt.Key_F11]:
             self.toggleFullscreen()
         elif key == Qt.Key_Space:
-            self.toggleTimer()
+            self.toggleStopwatch()
         elif key == Qt.Key_R:
-            self.resetTimer()
+            self.resetStopwatch()
         elif key in [Qt.Key_Plus, Qt.Key_Equal]:
             change_font_size(self, 5)
         elif key in [Qt.Key_Minus, Qt.Key_Underscore]:
             change_font_size(self, -5)
+        elif key in [Qt.Key_P]:
+            self.togglePinWindow()
         elif key in [Qt.Key_0, Qt.Key_F5]:
             self.resetFontSize()
         elif key in [Qt.Key_T, Qt.Key_M]:
