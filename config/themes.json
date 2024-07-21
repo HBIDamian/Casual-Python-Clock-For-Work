@@ -2,18 +2,32 @@
     "Light Themes": [
         { "name": "Light Mode", "background_color": "#f0f0f0", "foreground_color": "#121212" },
         { "name": "Black on White", "background_color": "white", "foreground_color": "black" },
-        { "name": "White on Red", "background_color": "red", "foreground_color": "white" }
+        { "name": "White on Red", "background_color": "#FF0000", "foreground_color": "white" },
+        { "name": "White on Green", "background_color": "#00FF00", "foreground_color": "white" },
+        { "name": "White on Blue", "background_color": "#0000FF", "foreground_color": "white" },
+        { "name": "White on Magenta", "background_color": "#FF00FF", "foreground_color": "white" },
+        { "name": "White on Cyan", "background_color": "#00FFFF", "foreground_color": "white" },
+        { "name": "White on Yellow", "background_color": "#FFFF00", "foreground_color": "white" }
     ],
     "Dark Themes": [
         { "name": "Dark Mode", "background_color": "#121212", "foreground_color": "#f0f0f0" },
         { "name": "White on Black", "background_color": "black", "foreground_color": "white" },
-        { "name": "Red on Black", "background_color": "black", "foreground_color": "red" },
-        { "name": "Dark Green on Black", "background_color": "black", "foreground_color": "green" },
-        { "name": "Dark Blue on Black", "background_color": "black", "foreground_color": "blue" }
+        { "name": "Red on Black", "background_color": "black", "foreground_color": "#FF0000" },
+        { "name": "Green on Black", "background_color": "black", "foreground_color": "#00FF00" },
+        { "name": "Blue on Black", "background_color": "black", "foreground_color": "#0000FF" },
+        { "name": "Magenta on Black", "background_color": "black", "foreground_color": "#FF00FF" },
+        { "name": "Cyan on Black", "background_color": "black", "foreground_color": "#00FFFF" },
+        { "name": "Yellow on Black", "background_color": "black", "foreground_color": "#FFFF00" }
     ],
     "Custom Themes": [
+        { "name": "Eigengrau", "background_color": "#16161d", "foreground_color": "#c5c5d3" },
+        { "name": "Noctua", "background_color": "#E7CEB5", "foreground_color": "#551705" },
+        { "name": "Forest && Moss", "background_color": "#2C5F2D", "foreground_color": "#97BC62"},
         { "name": "Sky Blue", "background_color": "#55aaff", "foreground_color": "#aaffff" },
-        { "name": "Blazing Orange & Mahogany", "background_color": "#730000", "foreground_color": "#FF4D00" },
-        { "name": "Royal Purple & Periwinkle", "background_color": "#7093FF", "foreground_color": "#330066" }
+        { "name": "Light Blue && Cobalt", "background_color": "#00246B", "foreground_color": "#CADCFC" },
+        { "name": "Blazing Orange && Mahogany", "background_color": "#730000", "foreground_color": "#FF4D00" },
+        { "name": "Royal Purple && Periwinkle", "background_color": "#7093FF", "foreground_color": "#330066" },
+        { "name": "Purple Lemon Tonic", "background_color": "#422057", "foreground_color": "#FCF951" },
+        { "name": "Crimson && Gold", "background_color": "#8C001A", "foreground_color": "#FFD700" }
     ]
 }
