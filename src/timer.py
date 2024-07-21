@@ -218,7 +218,7 @@ class Timer(QMainWindow):
             action = QAction(theme['name'], self)
             action.triggered.connect(
                 lambda checked, bg=theme['background_color'], fg=theme['foreground_color']: 
-                set_preset_colors(self, fg, bg)
+                set_preset_colors(self, bg, fg)
             )
             themes_menu.addAction(action)
         parent_menu.addMenu(themes_menu)
