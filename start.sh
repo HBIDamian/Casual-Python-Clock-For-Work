@@ -56,5 +56,6 @@ case $choice in
         ;;
 esac
 
-# Wait for user to exit the script
-read -p "Press any key to exit..."
+# Wait for user to exit the script by pressing any key
+read -n 1 -s -r -p "Press any key to exit..."
+ 
