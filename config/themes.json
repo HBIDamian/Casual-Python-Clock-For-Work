@@ -1,0 +1,19 @@
+{
+    "Light Themes": [
+        { "name": "Light Mode", "background_color": "#f0f0f0", "foreground_color": "#121212" },
+        { "name": "Black on White", "background_color": "white", "foreground_color": "black" },
+        { "name": "White on Red", "background_color": "red", "foreground_color": "white" }
+    ],
+    "Dark Themes": [
+        { "name": "Dark Mode", "background_color": "#121212", "foreground_color": "#f0f0f0" },
+        { "name": "White on Black", "background_color": "black", "foreground_color": "white" },
+        { "name": "Red on Black", "background_color": "black", "foreground_color": "red" },
+        { "name": "Dark Green on Black", "background_color": "black", "foreground_color": "green" },
+        { "name": "Dark Blue on Black", "background_color": "black", "foreground_color": "blue" }
+    ],
+    "Custom Themes": [
+        { "name": "Sky Blue", "background_color": "#55aaff", "foreground_color": "#aaffff" },
+        { "name": "Blazing Orange & Mahogany", "background_color": "#730000", "foreground_color": "#FF4D00" },
+        { "name": "Royal Purple & Periwinkle", "background_color": "#7093FF", "foreground_color": "#330066" }
+    ]
+}

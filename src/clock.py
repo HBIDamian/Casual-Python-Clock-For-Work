@@ -1,3 +1,4 @@
+import json
 import os
 import time
 import warnings
@@ -5,14 +6,24 @@ import webbrowser
 from PyQt5.QtWidgets import QMainWindow, QLabel, QAction, QMessageBox, QMenu
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QFont, QFontDatabase, QFontMetrics
-from .colour_functions import set_background_color, set_foreground_color, set_preset_colors
-from .window_functions import toggle_fullscreen, update_window_size_fullscreen, update_window_size_normal, change_font_size
+from .colour_functions import (
+    set_background_color,
+    set_foreground_color,
+    set_preset_colors
+)
+from .window_functions import (
+    toggle_fullscreen,
+    update_window_size_fullscreen,
+    update_window_size_normal,
+    change_font_size
+)
 
-warnings.filterwarnings("ignore", category=UserWarning)
+warnings.filterwarnings("ignore", category=UserWarning)  # Ignore user warnings
 
 class Clock(QMainWindow):
     def __init__(self):
         super().__init__()
+        # Default settings
         self.default_font_size = 200
         self.current_font_size = self.default_font_size
         self.min_font_size = 50
@@ -21,20 +32,21 @@ class Clock(QMainWindow):
         self.pinnedWindow = False
         self.foreground_color = 'white'
         self.background_color = 'black'
-        self.setWindowFlags(self.windowFlags() & ~Qt.WindowMaximizeButtonHint)
-
         self.setWindowTitle('Digital Clock')
         self.initUI()
 
     def initUI(self):
+        # Initialize the user interface
         self.loadCustomFont()
         self.createLabel()
         self.createTimer()
         self.setInitialWindowSize()
+        self.loadThemes()
         self.createMenuBar()
         self.show()
 
     def loadCustomFont(self):
+        # Load and set a custom font
         font_path = os.path.join(os.path.dirname(__file__), '../Assets/Font/seven-leds.ttf')
         self.font_id = QFontDatabase.addApplicationFont(font_path)
         if self.font_id == -1:
@@ -42,6 +54,7 @@ class Clock(QMainWindow):
         self.font_family = QFontDatabase.applicationFontFamilies(self.font_id)[0]
 
     def createLabel(self):
+        # Create and configure the time display label
         self.label = QLabel(self)
         self.label.setAlignment(Qt.AlignCenter)
         self.label.setGeometry(self.geometry())
@@ -50,82 +63,102 @@ class Clock(QMainWindow):
         self.updateTime()
 
     def createTimer(self):
+        # Create a timer to update the time every 250 milliseconds
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.updateTime)
         self.timer.start(250)
 
     def setInitialWindowSize(self):
+        # Set initial window size based on font size
         if not self.is_fullscreen:
             font_metrics = QFontMetrics(QFont(self.font_family, self.current_font_size))
             text_width = font_metrics.horizontalAdvance("00:00:00")
             text_height = font_metrics.height()
             self.resize(text_width + 20, text_height + 20)
 
-    def createMenuBar(self):
-        self.menubar = self.menuBar()
-        settings_menu = self.menubar.addMenu('Settings')
+    def loadThemes(self):
+        # Load themes from configuration file
+        themes_path = os.path.join(os.path.dirname(__file__), '../config/themes.json')
+        with open(themes_path, 'r') as file:
+            self.themes = json.load(file)
 
+    def createMenuBar(self):
+        # Create and configure the menu bar
+        self.menubar = self.menuBar()
+        settings_menu = self.menubar.addMenu('Clock Settings')
+
+        # Pin Window Action
         pin_action = QAction('Pin Window', self)
         pin_action.setCheckable(True)
         pin_action.triggered.connect(self.togglePinWindow)
         settings_menu.addAction(pin_action)
+
+        # Fullscreen Action
+        fullscreen_action = QAction('Fullscreen', self)
+        fullscreen_action.setCheckable(True)
+        fullscreen_action.triggered.connect(lambda: toggle_fullscreen(self))
+        settings_menu.addAction(fullscreen_action)
+
         settings_menu.addSeparator()
 
+        # Colours Menu
         colours_menu = QMenu('Colours', self)
         bg_color_action = QAction('Background Colour', self)
         bg_color_action.triggered.connect(lambda: set_background_color(self))
         colours_menu.addAction(bg_color_action)
+
         fg_color_action = QAction('Foreground Colour', self)
         fg_color_action.triggered.connect(lambda: set_foreground_color(self))
         colours_menu.addAction(fg_color_action)
-        colours_menu.addSeparator()
 
-        colours_menu.addAction('Swap Colours').triggered.connect(lambda: set_preset_colors(self, self.foreground_color, self.background_color))
-        colours_menu.addAction('Random').triggered.connect(lambda: set_preset_colors(self, '#' + os.urandom(6).hex(), '#' + os.urandom(6).hex()))
+        colours_menu.addSeparator()
+        colours_menu.addAction('Swap Colours').triggered.connect(
+            lambda: set_preset_colors(self, self.foreground_color, self.background_color)
+        )
+        colours_menu.addAction('Random').triggered.connect(
+            lambda: set_preset_colors(self, '#' + os.urandom(6).hex(), '#' + os.urandom(6).hex())
+        )
         colours_menu.addSeparator()
         settings_menu.addMenu(colours_menu)
 
+        # Presets Menu
         presets_menu = QMenu('Presets', self)
         presets_menu.addSeparator()
-
-        presets_dark_menu = QMenu('Dark Themes', self)
-        presets_light_menu = QMenu('Light Themes', self)
-        presets_custom_menu = QMenu('Custom Themes', self)
-
-        presets_dark_menu.addAction('Dark Mode').triggered.connect(lambda: set_preset_colors(self, '#121212', '#f0f0f0'))
-        presets_dark_menu.addAction('White on Black').triggered.connect(lambda: set_preset_colors(self, 'black', 'white'))
-        presets_dark_menu.addAction('Red on Black').triggered.connect(lambda: set_preset_colors(self, 'black', 'red'))
-        presets_dark_menu.addAction('Dark Green on Black').triggered.connect(lambda: set_preset_colors(self, 'black', 'green'))
-        presets_dark_menu.addAction('Dark Blue on Black').triggered.connect(lambda: set_preset_colors(self, 'black', 'blue'))
-
-        presets_light_menu.addAction('Light Mode').triggered.connect(lambda: set_preset_colors(self, '#f0f0f0', '#121212'))
-        presets_light_menu.addAction('Black on White').triggered.connect(lambda: set_preset_colors(self, 'white', 'black'))
-        presets_light_menu.addAction('White on Red').triggered.connect(lambda: set_preset_colors(self, 'red', 'white'))
-
-        presets_custom_menu.addAction('Sky Blue').triggered.connect(lambda: set_preset_colors(self, '#55aaff', '#aaffff'))
-        presets_custom_menu.addAction('Blazing Orange & Mahogany').triggered.connect(lambda: set_preset_colors(self, '#730000', '#FF4D00'))
-        presets_custom_menu.addAction('Royal Purple & Periwinkle').triggered.connect(lambda: set_preset_colors(self, '#7093FF', '#330066'))
-
-        presets_menu.addMenu(presets_light_menu)
-        presets_menu.addMenu(presets_dark_menu)
-        presets_menu.addMenu(presets_custom_menu)
-
+        self.populateThemesMenu(presets_menu, 'Light Themes')
+        self.populateThemesMenu(presets_menu, 'Dark Themes')
+        self.populateThemesMenu(presets_menu, 'Custom Themes')
         colours_menu.addMenu(presets_menu)
 
+        # Help Menu
         help_menu = self.menubar.addMenu('Help')
         about_action = QAction('About', self)
         about_action.triggered.connect(self.show_about)
         help_menu.addAction(about_action)
+
         help_action = QAction('Shortcuts', self)
         help_action.triggered.connect(self.show_help)
         help_menu.addAction(help_action)
 
+    def populateThemesMenu(self, parent_menu, theme_category):
+        # Populate the themes menu with theme actions
+        themes_menu = QMenu(theme_category, self)
+        for theme in self.themes.get(theme_category, []):
+            action = QAction(theme['name'], self)
+            action.triggered.connect(
+                lambda checked, bg=theme['background_color'], fg=theme['foreground_color']: 
+                set_preset_colors(self, fg, bg)
+            )
+            themes_menu.addAction(action)
+        parent_menu.addMenu(themes_menu)
+
     def togglePinWindow(self):
+        # Toggle pinning the window on top
         self.pinnedWindow = not self.pinnedWindow
         self.setWindowFlag(Qt.WindowStaysOnTopHint, self.pinnedWindow)
         self.show()
 
     def show_about(self):
+        # Show the About dialog
         about_message = (
             "Idle Digital Clock (using Python)\n\n"
             "A simple digital clock application\n"
@@ -143,9 +176,11 @@ class Clock(QMainWindow):
         about_message_box.exec_()
 
     def open_github(self):
+        # Open the GitHub repository in the browser
         webbrowser.open("https://github.com/HBIDamian/Casual-Python-Clock-For-Work")
 
     def show_help(self):
+        # Show the help dialog with keyboard shortcuts
         help_message = (
             "Keyboard Shortcuts:\n\n"
             "F, F11\t Toggle Fullscreen\n"
@@ -161,10 +196,12 @@ class Clock(QMainWindow):
         QMessageBox.information(self, "Help", help_message)
 
     def updateTime(self):
+        # Update the label with the current time
         self.label.setText(time.strftime("%H:%M:%S"))
 
     def keyPressEvent(self, event):
-        if event.key() == Qt.Key_F or event.key() == Qt.Key_F11:
+        # Handle keyboard shortcuts
+        if event.key() in (Qt.Key_F, Qt.Key_F11):
             toggle_fullscreen(self)
         elif event.key() == Qt.Key_P:
             self.togglePinWindow()
@@ -174,12 +211,13 @@ class Clock(QMainWindow):
             change_font_size(self, -5)
         elif event.key() in (Qt.Key_0, Qt.Key_F5):
             self.resetFontSize()
-        elif event.key() == Qt.Key_T or event.key() == Qt.Key_M:
+        elif event.key() in (Qt.Key_T, Qt.Key_M):
             self.toggle_menubar()
         elif event.key() in (Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1):
             self.show_help()
 
     def updateFontSize(self):
+        # Update the font size and apply stylesheet
         self.label.setStyleSheet(
             f"font-family: '{self.font_family}'; "
             f"font-size: {self.current_font_size}px; "
@@ -190,31 +228,24 @@ class Clock(QMainWindow):
         if not self.is_fullscreen:
             update_window_size_normal(self)
 
+    def resetFontSize(self):
+        # Reset font size to default
+        self.current_font_size = self.default_font_size
+        self.updateFontSize()
+
     def resizeEvent(self, event):
+        # Adjust label size when the window is resized
         self.label.setGeometry(self.rect())
         self.label.setAlignment(Qt.AlignCenter)
         super().resizeEvent(event)
 
     def wheelEvent(self, event):
+        # Adjust font size with mouse wheel
         delta = event.angleDelta().y()
-        if delta > 0:
-            change_font_size(self, 5)
-        else:
-            change_font_size(self, -5)
-
-    def mousePressEvent(self, event):
-        if event.button() == Qt.MiddleButton:
-            self.resetFontSize()
-
-    def mouseDoubleClickEvent(self, event):
-        if event.button() == Qt.LeftButton:
-            toggle_fullscreen(self)
-
-    def resetFontSize(self):
-        self.current_font_size = self.default_font_size
-        self.updateFontSize()
+        change_font_size(self, 5 if delta > 0 else -5)
 
     def toggle_menubar(self):
+        # Toggle visibility of the menu bar
         if self.menubar.isVisible():
             self.menubar.hide()
         else:
