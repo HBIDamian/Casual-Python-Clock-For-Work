@@ -318,8 +318,8 @@ class Stopwatch(QMainWindow):
     def mouseDoubleClickEvent(self, event):
         # Handle mouse double-click event (left button to toggle fullscreen)
         if event.button() == Qt.LeftButton:
-            self.toggleFullscreen()
-
+            toggle_fullscreen(self)
+            
     def resizeEvent(self, event):
         # Handle resize event to center the label and keep alignment
         self.label.setGeometry(self.rect())

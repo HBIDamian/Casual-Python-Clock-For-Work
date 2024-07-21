@@ -254,10 +254,19 @@ class Clock(QMainWindow):
         delta = event.angleDelta().y()
         change_font_size(self, 5 if delta > 0 else -5)
 
+    def mousePressEvent(self, event):
+        # Handle mouse press event (middle button to reset font size)
+        if event.button() == Qt.MiddleButton:
+            self.resetFontSize()
+
+    def mouseDoubleClickEvent(self, event):
+        # Handle mouse double-click event (left button to toggle fullscreen)
+        if event.button() == Qt.LeftButton:
+            toggle_fullscreen(self)
+
     def toggle_menubar(self):
         # Toggle visibility of the menu bar
         if self.menubar.isVisible():
-            # Hide the menu bar
             self.menubar.hide()
         else:
             self.menubar.show()
