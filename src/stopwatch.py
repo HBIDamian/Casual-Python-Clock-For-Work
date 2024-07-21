@@ -16,7 +16,6 @@ from .colour_functions import (
 )
 from .window_functions import (
     toggle_fullscreen, 
-    update_window_size_fullscreen, 
     update_window_size_normal, 
     change_font_size
 )
@@ -40,6 +39,8 @@ class Stopwatch(QMainWindow):
         self.background_color = 'black'
         self.setWindowTitle('Digital Stopwatch')
         self.setWindowIconText('Digital Stopwatch')
+        # Start window on top
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, False)
         self.initUI()
 
     def initUI(self):
@@ -103,13 +104,13 @@ class Stopwatch(QMainWindow):
         fullscreen_action = QAction('Toggle Fullscreen', self)
         fullscreen_action.setShortcut('F')
         fullscreen_action.setCheckable(True)
-        fullscreen_action.triggered.connect(self.toggleFullscreen)
+        fullscreen_action.triggered.connect(lambda: toggle_fullscreen(self))
         settings_menu.addAction(fullscreen_action)
 
         # Show Menubar Action
         menubar_action = QAction('Toggle Menubar (Windows Only)', self)
-        menubar_action.setCheckable(True)
         menubar_action.setShortcut('M')
+        menubar_action.setCheckable(True)
         menubar_action.triggered.connect(self.toggle_menubar)
         settings_menu.addAction(menubar_action)
 
@@ -140,10 +141,17 @@ class Stopwatch(QMainWindow):
         self.populateThemesMenu(presets_menu, 'Dark Themes')
         self.populateThemesMenu(presets_menu, 'Custom Themes')
         colours_menu.addMenu(presets_menu)
-
+        
         # Help Menu
         help_menu = self.menubar.addMenu('Help')
-        self.addHelpActions(help_menu)
+        about_action = QAction('About', self)
+        about_action.triggered.connect(self.show_about)
+        help_menu.addAction(about_action)
+
+        help_action = QAction('Shortcuts', self)
+        help_action.triggered.connect(self.show_help)
+        help_menu.addAction(help_action)
+
 
     def addColourActions(self, menu):
         # Add colour-related actions to the menu
@@ -166,16 +174,6 @@ class Stopwatch(QMainWindow):
         menu.addAction(random_colours_action)
 
         menu.addSeparator()
-
-    def addHelpActions(self, menu):
-        # Add help-related actions to the menu
-        about_action = QAction('About', self)
-        about_action.triggered.connect(self.show_about)
-        menu.addAction(about_action)
-
-        help_action = QAction('Shortcuts', self)
-        help_action.triggered.connect(self.show_help)
-        menu.addAction(help_action)
 
     def show_about(self):
         # Show the 'About' message box
@@ -238,16 +236,6 @@ class Stopwatch(QMainWindow):
         self.setWindowFlag(Qt.WindowStaysOnTopHint, self.pinnedWindow)
         self.show()
 
-    def toggleFullscreen(self):
-        # Toggle fullscreen mode
-        if self.is_fullscreen:
-            self.showNormal()
-            self.updateWindowSizeNormal()
-        else:
-            self.showFullScreen()
-            self.updateWindowSizeFullscreen()
-        self.is_fullscreen = not self.is_fullscreen
-
     def toggleStopwatch(self):
         # Toggle start/stop of the stopwatch
         if self.stopwatch_running:
@@ -299,18 +287,22 @@ class Stopwatch(QMainWindow):
 
     def keyPressEvent(self, event):
         # Handle key press events
-        key = event.key()
-        if key == Qt.Key_Space:
+        if event.key == Qt.Key_Space:
             self.toggleStopwatch()
-        elif key == Qt.Key_R:
+        elif event.key == Qt.Key_R:
             self.resetStopwatch()
-        elif key in [Qt.Key_Plus, Qt.Key_Equal]:
+        elif event.key in [Qt.Key_Plus, Qt.Key_Equal]:
             change_font_size(self, 5)
-        elif key in [Qt.Key_Minus, Qt.Key_Underscore]:
+        elif event.key in [Qt.Key_Minus, Qt.Key_Underscore]:
             change_font_size(self, -5)
-        elif key in [Qt.Key_0, Qt.Key_F5]:
+        elif event.key in [Qt.Key_0, Qt.Key_F5]:
             self.resetFontSize()
-        elif key in [Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1]:
+        elif event.key in [Qt.Key_M, Qt.Key_T]:
+            self.toggle_menubar()   
+        elif event.key in [Qt.Key_F, Qt.Key_F11]:
+            toggle_fullscreen(self)
+            self.menubar.actions()[0].setChecked(self.is_fullscreen)  
+        elif event.key in [Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1]:
             self.show_help()
 
     def wheelEvent(self, event):

@@ -4,8 +4,7 @@ cls
 REM Define paths to your Python scripts
 set TIMER_SCRIPT=startStopwatch.py
 set CLOCK_SCRIPT=startClock.py
-
-goto menu
+goto :menu
 
 
 REM Function to start the Stopwatch

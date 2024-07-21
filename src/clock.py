@@ -13,7 +13,6 @@ from .colour_functions import (
 )
 from .window_functions import (
     toggle_fullscreen,
-    update_window_size_fullscreen,
     update_window_size_normal,
     change_font_size
 )
@@ -33,6 +32,8 @@ class Clock(QMainWindow):
         self.foreground_color = 'white'
         self.background_color = 'black'
         self.setWindowTitle('Digital Clock')
+        # Start window on top
+        self.setWindowFlag(Qt.WindowStaysOnTopHint, False)
         self.initUI()
 
     def initUI(self):
@@ -148,6 +149,7 @@ class Clock(QMainWindow):
         help_action.triggered.connect(self.show_help)
         help_menu.addAction(help_action)
 
+
     def populateThemesMenu(self, parent_menu, theme_category):
         # Populate the themes menu with theme actions
         themes_menu = QMenu(theme_category, self)
@@ -210,12 +212,17 @@ class Clock(QMainWindow):
 
     def keyPressEvent(self, event):
         # Handle keyboard shortcuts
-        if event.key() in (Qt.Key_Plus, Qt.Key_Equal):
+        if event.key in (Qt.Key_Plus, Qt.Key_Equal):
             change_font_size(self, 5)
-        elif event.key() in (Qt.Key_Minus, Qt.Key_Underscore):
+        elif event.key in (Qt.Key_Minus, Qt.Key_Underscore):
             change_font_size(self, -5)
-        elif event.key() in (Qt.Key_0, Qt.Key_F5):
+        elif event.key in (Qt.Key_0, Qt.Key_F5):
             self.resetFontSize()
+        elif event.key in [Qt.Key_M, Qt.Key_T]:
+            self.toggle_menubar()   
+        elif event.key in [Qt.Key_F, Qt.Key_F11]:
+            toggle_fullscreen(self)
+            self.menubar.actions()[0].setChecked(self.is_fullscreen)  
         elif event.key() in (Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1):
             self.show_help()
 
@@ -250,6 +257,7 @@ class Clock(QMainWindow):
     def toggle_menubar(self):
         # Toggle visibility of the menu bar
         if self.menubar.isVisible():
+            # Hide the menu bar
             self.menubar.hide()
         else:
             self.menubar.show()
