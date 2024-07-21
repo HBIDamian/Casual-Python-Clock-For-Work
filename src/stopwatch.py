@@ -94,6 +94,7 @@ class Stopwatch(QMainWindow):
 
         # Pin Window Action
         pin_action = QAction('Pin Window', self)
+        pin_action.setShortcut('P')
         pin_action.setCheckable(True)
         pin_action.triggered.connect(self.togglePinWindow)
         settings_menu.addAction(pin_action)
@@ -101,8 +102,16 @@ class Stopwatch(QMainWindow):
         # Toggle Fullscreen Action
         fullscreen_action = QAction('Toggle Fullscreen', self)
         fullscreen_action.setShortcut('F')
+        fullscreen_action.setCheckable(True)
         fullscreen_action.triggered.connect(self.toggleFullscreen)
         settings_menu.addAction(fullscreen_action)
+
+        # Show Menubar Action
+        menubar_action = QAction('Toggle Menubar (Windows Only)', self)
+        menubar_action.setCheckable(True)
+        menubar_action.setShortcut('M')
+        menubar_action.triggered.connect(self.toggle_menubar)
+        settings_menu.addAction(menubar_action)
 
         settings_menu.addSeparator()
 
@@ -291,9 +300,7 @@ class Stopwatch(QMainWindow):
     def keyPressEvent(self, event):
         # Handle key press events
         key = event.key()
-        if key in [Qt.Key_F, Qt.Key_F11]:
-            self.toggleFullscreen()
-        elif key == Qt.Key_Space:
+        if key == Qt.Key_Space:
             self.toggleStopwatch()
         elif key == Qt.Key_R:
             self.resetStopwatch()
@@ -301,12 +308,8 @@ class Stopwatch(QMainWindow):
             change_font_size(self, 5)
         elif key in [Qt.Key_Minus, Qt.Key_Underscore]:
             change_font_size(self, -5)
-        elif key in [Qt.Key_P]:
-            self.togglePinWindow()
         elif key in [Qt.Key_0, Qt.Key_F5]:
             self.resetFontSize()
-        elif key in [Qt.Key_T, Qt.Key_M]:
-            self.toggle_menubar()
         elif key in [Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1]:
             self.show_help()
 

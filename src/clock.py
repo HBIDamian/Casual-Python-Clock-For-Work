@@ -90,12 +90,21 @@ class Clock(QMainWindow):
         # Pin Window Action
         pin_action = QAction('Pin Window', self)
         pin_action.setCheckable(True)
+        pin_action.setShortcut('P')
         pin_action.triggered.connect(self.togglePinWindow)
         settings_menu.addAction(pin_action)
+
+        # Show Menubar Action
+        menubar_action = QAction('Toggle Menubar (Windows Only)', self)
+        menubar_action.setCheckable(True)
+        menubar_action.setShortcut('M')
+        menubar_action.triggered.connect(self.toggle_menubar)
+        settings_menu.addAction(menubar_action)
 
         # Fullscreen Action
         fullscreen_action = QAction('Fullscreen', self)
         fullscreen_action.setCheckable(True)
+        fullscreen_action.setShortcut('F')
         fullscreen_action.triggered.connect(lambda: toggle_fullscreen(self))
         settings_menu.addAction(fullscreen_action)
 
@@ -201,18 +210,12 @@ class Clock(QMainWindow):
 
     def keyPressEvent(self, event):
         # Handle keyboard shortcuts
-        if event.key() in (Qt.Key_F, Qt.Key_F11):
-            toggle_fullscreen(self)
-        elif event.key() == Qt.Key_P:
-            self.togglePinWindow()
-        elif event.key() in (Qt.Key_Plus, Qt.Key_Equal):
+        if event.key() in (Qt.Key_Plus, Qt.Key_Equal):
             change_font_size(self, 5)
         elif event.key() in (Qt.Key_Minus, Qt.Key_Underscore):
             change_font_size(self, -5)
         elif event.key() in (Qt.Key_0, Qt.Key_F5):
             self.resetFontSize()
-        elif event.key() in (Qt.Key_T, Qt.Key_M):
-            self.toggle_menubar()
         elif event.key() in (Qt.Key_Slash, Qt.Key_Question, Qt.Key_F1):
             self.show_help()
 
